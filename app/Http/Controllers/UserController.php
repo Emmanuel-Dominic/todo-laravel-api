@@ -122,4 +122,22 @@ class UserController extends Controller
         }
     }
 
+
+    /**
+     * Soft deletes a specified user api controller resource.
+     *
+     * @param int $userId
+     *
+     * @return JsonResponse
+     */
+    public function deleteUser(int $userId)
+    {
+        $user = User::findOrFail($userId);
+        $user->delete();
+        $success['message'] = 'user record deleted successfully';
+        $success['data'] = User::onlyTrashed()->find($userId);
+        return response()->json(['success' => $success], 200);
+    }
+
+
 }
