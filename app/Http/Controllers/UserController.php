@@ -77,4 +77,17 @@ class UserController extends Controller
         return response()->json(['success' => $success], 200);
     }
 
+    /**
+     * Display single user api controller resource.
+     *
+     * @param int $userId
+     *
+     * @return JsonResponse
+     */
+    public function getUser(int $userId)
+    {
+        $user = User::findOrFail($userId);
+        return response()->json(['success' => $user], 200);
+    }
+
 }

@@ -20,4 +20,5 @@ Route::post('/login', 'UserController@userLogin');
 Route::group(['middleware' => 'auth:api'], function () {
     // User Routes
     Route::get('users', 'UserController@getAllUsers')->middleware('verified');
+    Route::get('users/{userId}', 'UserController@getUser')->middleware('verified');
 });
