@@ -60,4 +60,21 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Display all users api controller resource.
+     *
+     * @return JsonResponse
+     */
+    public function getAllUsers()
+    {
+        $users = User::all();
+        $count = $users->count();
+        if ($count==0){
+            return response()->json(['error' => 'No users found'], 404);
+        }
+        $success['data'] = $users;
+        $success['total'] = $count;
+        return response()->json(['success' => $success], 200);
+    }
+
 }

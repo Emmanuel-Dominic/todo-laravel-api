@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('/register', 'UserController@userRegister');
 Route::post('/login', 'UserController@userLogin');
+
+Route::group(['middleware' => 'auth:api'], function () {
+    // User Routes
+    Route::get('users', 'UserController@getAllUsers')->middleware('verified');
+});
