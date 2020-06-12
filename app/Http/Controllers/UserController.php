@@ -156,4 +156,21 @@ class UserController extends Controller
     }
 
 
+    /**
+     * Display all trashed users api controller resource.
+     *
+     * @return JsonResponse
+     */
+    public function trashedUsers()
+    {
+        $trash_users = User::onlyTrashed()->get();
+        $count = $trash_users->count();
+        if ($count == 0) {
+            return response()->json(['error' => 'No trashed users found'], 404);
+        }
+        $success['data'] = $trash_users;
+        $success['total'] = $count;
+        return response()->json(['success' => $success], 200);
+    }
+
 }
