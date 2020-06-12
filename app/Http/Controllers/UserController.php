@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ class UserController extends Controller
 {
     //
     private $secrete_key = 'hsw67wb%^&*$#xnjksnjcnsjknsjsjnsjncsjjssnjn';
+
     /**
      * User Registration api controller for creating a new users.
      *
@@ -29,7 +31,7 @@ class UserController extends Controller
             'password' => 'required|min:8',
             'confirm_password' => 'required|same:password'
         ]);
-        if ($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
         $input['password'] = bcrypt($input['password']);
@@ -48,14 +50,14 @@ class UserController extends Controller
      */
     public function userLogin()
     {
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])){
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $success['access_token'] = $user->createToken($this->secrete_key)->accessToken;
             $success['message'] = 'LoggedIn successfully';
             $success['username'] = $user->username;
             $success['email'] = $user->email;
             return response()->json(['success' => $success], 200);
-        }else{
+        } else {
             return response()->json(['error' => 'Unauthorised, invalid credentials provided'], 401);
         }
     }
@@ -69,7 +71,7 @@ class UserController extends Controller
     {
         $users = User::all();
         $count = $users->count();
-        if ($count==0){
+        if ($count == 0) {
             return response()->json(['error' => 'No users found'], 404);
         }
         $success['data'] = $users;
@@ -88,6 +90,36 @@ class UserController extends Controller
     {
         $user = User::findOrFail($userId);
         return response()->json(['success' => $user], 200);
+    }
+
+    /**
+     * Update user details api controller for a specified resource.
+     *
+     * @param Request $request
+     * @param int $userId
+     *
+     * @return JsonResponse
+     */
+    public function updateUser(Request $request, int $userId)
+    {
+        if (User::where('id', $userId)->exists()) {
+            $user = User::findOrFail($userId);
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'name' => 'string|max:255',
+                'password' => '',
+                'confirm_password' => 'same:password'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            $user->name = is_null($input['name']) ? $user->name : $input['name'];
+            $user->password = is_null($input['password']) ? $user->password : bcrypt($input['password']);
+            $user->save();
+            return response()->json([
+                "message" => "user record updated successfully", "data" => $user
+            ], 200);
+        }
     }
 
 }
