@@ -155,7 +155,6 @@ class UserController extends Controller
         return response()->json(['success' => $success], 200);
     }
 
-
     /**
      * Display all trashed users api controller resource.
      *
@@ -173,4 +172,21 @@ class UserController extends Controller
         return response()->json(['success' => $success], 200);
     }
 
+
+    /**
+     * Display all registered users historical api controller records, both activate and deactivated users
+     *
+     * @return JsonResponse
+     */
+    public function userRecords(){
+        $users_history = User::withTrashed()->orderBy('created_at', 'desc')->get();
+        $count = $users_history->count();
+        if ($count == 0) {
+            return response()->json(['error' => 'No historical users found'], 404);
+        }
+        $success['message'] = 'Historical user records';
+        $success['data'] = $users_history;
+        $success['total'] = $count;
+        return response()->json(['success' => $success], 200);
+    }
 }

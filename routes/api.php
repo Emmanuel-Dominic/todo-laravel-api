@@ -25,4 +25,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('users/{userId}/delete', 'UserController@deleteUser')->middleware('verified');
     Route::get('users/{userId}/restore', 'UserController@restoreUser')->middleware('verified');
     Route::get('trash/users', 'UserController@trashedUsers')->middleware('verified');
+    Route::get('records/users', 'UserController@userRecords')->middleware('verified');
 });
