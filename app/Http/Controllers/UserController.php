@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 
@@ -38,6 +39,25 @@ class UserController extends Controller
         $success['username'] = $user->username;
         $success['email'] = $user->email;
         return response()->json(['success' => $success], 201);
+    }
+
+    /**
+     * User login api controller, verifies user credentials
+     *
+     * @return JsonResponse
+     */
+    public function userLogin()
+    {
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])){
+            $user = Auth::user();
+            $success['access_token'] = $user->createToken($this->secrete_key)->accessToken;
+            $success['message'] = 'LoggedIn successfully';
+            $success['username'] = $user->username;
+            $success['email'] = $user->email;
+            return response()->json(['success' => $success], 200);
+        }else{
+            return response()->json(['error' => 'Unauthorised, invalid credentials provided'], 401);
+        }
     }
 
 }
