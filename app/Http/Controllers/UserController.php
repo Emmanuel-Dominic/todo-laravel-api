@@ -140,4 +140,20 @@ class UserController extends Controller
     }
 
 
+    /**
+     * Restores a deleted user api controller record from trash
+     *
+     * @param int $userId
+     *
+     * @return JsonResponse
+     */
+    public function restoreUser(int $userId){
+        $user = User::onlyTrashed()->findOrFail($userId);
+        $user->restore();
+        $success['message'] = 'user record restored successfully';
+        $success['data'] = User::find($userId);
+        return response()->json(['success' => $success], 200);
+    }
+
+
 }

@@ -23,4 +23,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('users/{userId}', 'UserController@getUser')->middleware('verified');
     Route::patch('users/{userId}/update', 'UserController@updateUser')->middleware('verified');
     Route::delete('users/{userId}/delete', 'UserController@deleteUser')->middleware('verified');
+    Route::get('users/{userId}/restore', 'UserController@restoreUser')->middleware('verified');
 });
