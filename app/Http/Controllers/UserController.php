@@ -40,6 +40,7 @@ class UserController extends Controller
         $success['message'] = 'User successfully Registered';
         $success['username'] = $user->username;
         $success['email'] = $user->email;
+        $success['id'] = $user->id;
         return response()->json(['success' => $success], 201);
     }
 
@@ -56,6 +57,7 @@ class UserController extends Controller
             $success['message'] = 'LoggedIn successfully';
             $success['username'] = $user->username;
             $success['email'] = $user->email;
+            $success['id'] = $user->id;
             return response()->json(['success' => $success], 200);
         } else {
             return response()->json(['error' => 'Unauthorised, invalid credentials provided'], 401);
@@ -119,7 +121,10 @@ class UserController extends Controller
             return response()->json([
                 "message" => "user record updated successfully", "data" => $user
             ], 200);
+        }else{
+            return response()->json(['error' => 'user not found'], 404);
         }
+
     }
 
 
