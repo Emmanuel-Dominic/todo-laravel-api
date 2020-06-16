@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, SoftDeletes, Notifiable;
 
+    public function messages(){
+        $this->hasMany(Message::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *
