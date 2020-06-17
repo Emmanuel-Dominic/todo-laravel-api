@@ -30,4 +30,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     // Message Routes
     Route::get('messages', 'MessageController@getAllMessages')->middleware('verified');
     Route::post('messages', 'MessageController@createMessage')->middleware('verified');
+    Route::get('messages/{messageId}', 'MessageController@getMessage')->middleware('verified');
 });

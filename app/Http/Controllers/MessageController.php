@@ -18,7 +18,6 @@ class MessageController extends Controller
         return response($messages->toJson(JSON_PRETTY_PRINT), 200);
     }
 
-
     public function createMessage(Request $request) {
         $message = new Message;
         $message['message'] = $request['message'];
@@ -28,6 +27,17 @@ class MessageController extends Controller
             "success" => "message record created",
             "message" => $message
         ], 201);
+    }
+
+    public function getMessage($messageId) {
+        if (Message::where('id', $messageId)->exists()) {
+            $message = Message::where('id', $messageId)->get()->toJson(JSON_PRETTY_PRINT);
+            return response($message, 200);
+        } else {
+            return response()->json([
+                "message" => "Message not found"
+            ], 404);
+        }
     }
 
 }
