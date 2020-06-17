@@ -26,4 +26,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('users/{userId}/restore', 'UserController@restoreUser')->middleware('verified');
     Route::get('trash/users', 'UserController@trashedUsers')->middleware('verified');
     Route::get('records/users', 'UserController@userRecords')->middleware('verified');
+
+    // Message Routes
+    Route::get('messages', 'MessageController@getAllMessages')->middleware('verified');
 });
