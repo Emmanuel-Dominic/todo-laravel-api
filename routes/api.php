@@ -34,4 +34,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::patch('messages/{messageId}', 'MessageController@updateMessage')->middleware('verified');
     Route::put('messages/{messageId}', 'MessageController@deleteMessage')->middleware('verified');
     Route::delete('messages/{messageId}', 'MessageController@destroyMessage')->middleware('verified');
+
+    // Group Routes
+    Route::get('groups', 'GroupController@getAllGroups')->middleware('verified');
 });
