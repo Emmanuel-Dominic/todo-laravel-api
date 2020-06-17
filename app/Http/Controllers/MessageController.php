@@ -40,4 +40,26 @@ class MessageController extends Controller
         }
     }
 
+
+    public function updateMessage(Request $request, $messageId) {
+        if (Message::where('id', $messageId)->exists()) {
+            $message = Message::find($messageId);
+            if ($message->owner == Auth::id()){
+                $message->message = is_null($request['message']) ? $message->message : $request['message'];
+                $message->save();
+                return response()->json([
+                    "success" => "message updated successfully",
+                    "message" => $message
+                ], 200);
+            }
+            return response()->json([
+                "message" => "sorry, you're not the author"
+            ], 401);
+        } else {
+            return response()->json([
+                "message" => "Message not found"
+            ], 404);
+        }
+    }
+
 }
