@@ -39,7 +39,7 @@ class MessageController extends Controller
             ], 404);
         }
     }
-    
+
     public function updateMessage(Request $request, $messageId) {
         if (Message::where('id', $messageId)->exists()) {
             $message = Message::findOrFail($messageId);
@@ -73,7 +73,7 @@ class MessageController extends Controller
             return response()->json([
                 "success" => "Message deleted successfully",
                 "message" => $message
-            ], 202);
+            ], 200);
             }
         } else {
             return response()->json([
