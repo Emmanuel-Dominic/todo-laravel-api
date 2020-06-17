@@ -39,4 +39,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('groups', 'GroupController@getAllGroups')->middleware('verified');
     Route::post('groups', 'GroupController@createGroup')->middleware('verified');
     Route::get('groups/{groupId}', 'GroupController@getGroup')->middleware('verified');
+    Route::patch('groups/{groupId}', 'GroupController@updateGroup')->middleware('verified');
 });
