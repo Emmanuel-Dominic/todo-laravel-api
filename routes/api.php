@@ -32,4 +32,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('messages', 'MessageController@createMessage')->middleware('verified');
     Route::get('messages/{messageId}', 'MessageController@getMessage')->middleware('verified');
     Route::patch('messages/{messageId}', 'MessageController@updateMessage')->middleware('verified');
+    Route::put('messages/{messageId}', 'MessageController@deleteMessage')->middleware('verified');
 });

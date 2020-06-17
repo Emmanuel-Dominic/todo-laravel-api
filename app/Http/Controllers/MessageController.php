@@ -62,4 +62,25 @@ class MessageController extends Controller
         }
     }
 
+    public function deleteMessage ($messageId) {
+        if(Message::where('id', $messageId)->exists()) {
+            $message = Message::find($messageId);
+            if ($message->deleted_at!=null){
+                return response()->json([
+                    "error" => "message already deleted"
+                ], 400);
+            }else{
+            $message->delete();
+            return response()->json([
+                "success" => "Message deleted successfully",
+                "message" => $message
+            ], 202);
+            }
+        } else {
+            return response()->json([
+                "message" => "Message not found"
+            ], 404);
+        }
+    }
+
 }
