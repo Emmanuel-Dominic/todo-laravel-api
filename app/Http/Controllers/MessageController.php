@@ -39,11 +39,10 @@ class MessageController extends Controller
             ], 404);
         }
     }
-
-
+    
     public function updateMessage(Request $request, $messageId) {
         if (Message::where('id', $messageId)->exists()) {
-            $message = Message::find($messageId);
+            $message = Message::findOrFail($messageId);
             if ($message->owner == Auth::id()){
                 $message->message = is_null($request['message']) ? $message->message : $request['message'];
                 $message->save();
@@ -64,7 +63,7 @@ class MessageController extends Controller
 
     public function deleteMessage ($messageId) {
         if(Message::where('id', $messageId)->exists()) {
-            $message = Message::find($messageId);
+            $message = Message::findOrFail($messageId);
             if ($message->deleted_at!=null){
                 return response()->json([
                     "error" => "message already deleted"
@@ -85,7 +84,7 @@ class MessageController extends Controller
 
     public function destroyMessage ($messageId) {
         if(Message::where('id', $messageId)->exists()) {
-            $message = Message::find($messageId);
+            $message = Message::findOrFail($messageId);
             if ($message->owner == Auth::id()){
                 $message->forceDelete();
                 return response()->json([
