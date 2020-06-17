@@ -37,4 +37,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // Group Routes
     Route::get('groups', 'GroupController@getAllGroups')->middleware('verified');
+    Route::post('groups', 'GroupController@createGroup')->middleware('verified');
 });
