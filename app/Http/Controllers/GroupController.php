@@ -29,4 +29,9 @@ class GroupController extends Controller
         ], 201);
     }
 
+    public function getGroup(int $groupId){
+        $group = Group::findOrFail($groupId);
+        return response()->json(['success' => $group], 200);
+    }
+
 }
