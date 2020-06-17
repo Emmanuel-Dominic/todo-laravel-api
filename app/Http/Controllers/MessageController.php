@@ -83,4 +83,24 @@ class MessageController extends Controller
         }
     }
 
+    public function destroyMessage ($messageId) {
+        if(Message::where('id', $messageId)->exists()) {
+            $message = Message::find($messageId);
+            if ($message->owner == Auth::id()){
+                $message->forceDelete();
+                return response()->json([
+                    "message" => "Message destroyed successfully"
+                ], 202);
+            }else{
+            return response()->json([
+                "message" => "sorry, you're not the author"
+            ], 401);
+            }
+        } else {
+            return response()->json([
+                "message" => "Message not found"
+            ], 404);
+        }
+    }
+
 }
