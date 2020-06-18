@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Message;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -92,6 +93,31 @@ class UserController extends Controller
     {
         $user = User::findOrFail($userId);
         return response()->json(['success' => $user], 200);
+    }
+
+    public function createUserMessage(Request $request, int $userId) {
+        $message = new Message;
+        $message['message'] = $request['message'];
+        $message['user'] = $userId;
+        $message['group'] = null;
+        $message['owner'] = Auth::id();
+        $user = User::findOrFail($userId);
+        $message->save();
+        return response()->json([
+            "success" => "message sent to {$user->username}",
+            "message" => $message
+        ], 201);
+    }
+
+    public function getUserChat($userId) {
+        if (Message::where('user', $userId)->exists()) {
+            $message = Message::where('user', $userId)->get();
+            return response()->json($message, 200);
+        } else {
+            return response()->json([
+                "message" => "No messages"
+            ], 404);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Group;
+use App\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +33,32 @@ class GroupController extends Controller
     public function getGroup(int $groupId){
         $group = Group::findOrFail($groupId);
         return response()->json(['success' => $group], 200);
+    }
+
+    public function createGroupMessage(Request $request, int $groupId) {
+        $message = new Message;
+        $message['message'] = $request['message'];
+        $message['user'] = null;
+        $message['group'] = $groupId;
+        $message['owner'] = Auth::id();
+        $group = Group::findOrFail($groupId);
+        $message->save();
+        return response()->json([
+            "success" => "message sent to {$group->name}",
+            "message" => $message
+        ], 201);
+    }
+
+
+    public function getGroupChat($groupId) {
+        if (Message::where('group', $groupId)->exists()) {
+            $message = Message::where('group', $groupId)->get()->toJson(JSON_PRETTY_PRINT);
+            return response($message, 200);
+        } else {
+            return response()->json([
+                "message" => "No messages"
+            ], 404);
+        }
     }
 
     public function updateGroup(Request $request, int $groupId) {

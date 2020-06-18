@@ -18,16 +18,6 @@ class MessageController extends Controller
         return response($messages->toJson(JSON_PRETTY_PRINT), 200);
     }
 
-    public function createMessage(Request $request) {
-        $message = new Message;
-        $message['message'] = $request['message'];
-        $message['owner'] = Auth::id();
-        $message->save();
-        return response()->json([
-            "success" => "message record created",
-            "message" => $message
-        ], 201);
-    }
 
     public function getMessage($messageId) {
         if (Message::where('id', $messageId)->exists()) {
