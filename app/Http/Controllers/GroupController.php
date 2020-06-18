@@ -57,4 +57,25 @@ class GroupController extends Controller
         }
     }
 
+    public function deleteGroup ($groupId) {
+        if(Group::where('id', $groupId)->exists()) {
+            $group = Group::findOrFail($groupId);
+            if ($group->owner!=Auth::id()){
+                return response()->json([
+                    "error" => "unauthorized, contact the group super admin"
+                ], 401);
+            }else{
+                $group->forceDelete();
+                return response()->json([
+                    "success" => "Group deleted successfully",
+                    "message" => $group
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                "message" => "Group not found"
+            ], 404);
+        }
+    }
+
 }
