@@ -17,9 +17,14 @@ class CreateMessagesTable extends Migration
             $table->softDeletes();
             $table->increments('id');
             $table->string('message');
+            $table->integer('user')->nullable();
+            $table->integer('group')->nullable();
             $table->integer('owner');
             $table->foreign('owner')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('group')->references('id')->on('groups')->onDelete('cascade');
+            $table->foreign('user')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
+
         });
     }
 
