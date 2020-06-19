@@ -45,12 +45,4 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('groups/{groupId}/messages', 'GroupController@createGroupMessage')->middleware('verified');
     Route::patch('groups/{groupId}', 'GroupController@updateGroup')->middleware('verified');
     Route::delete('groups/{groupId}', 'GroupController@deleteGroup')->middleware('verified');
-
-    // Comment Routes
-    Route::get('messages/{messageId}/comments', 'CommentController@getAllComments')->middleware('verified');
-    Route::get('messages/{messageId}/comments/{commentId}', 'CommentController@getComment')->middleware('verified');
-    Route::patch('messages/{messageId}/comments/{commentId}', 'CommentController@updateComment')->middleware('verified');
-    Route::put('messages/{messageId}/comments/{commentId}', 'CommentController@deleteComment')->middleware('verified');
-    Route::delete('messages/{messageId}/comments/{commentId}', 'CommentController@destroyComment')->middleware('verified');
-    Route::post('messages/{messageId}/comments', 'CommentController@createComment')->middleware('verified');
 });

@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 
@@ -98,6 +99,12 @@ class UserController extends Controller
     public function createUserMessage(Request $request, int $userId) {
         $message = new Message;
         $message['message'] = $request['message'];
+        $message['comment_on'] = null;
+        $message['user'] = null;
+        if ($request['status']=='comment'){
+            $messaging = Message::where('id', $request['comment_on'])->get();
+            $message['comment_on'] = $request['comment_on'];
+        }
         $message['user'] = $userId;
         $message['group'] = null;
         $message['owner'] = Auth::id();
@@ -110,9 +117,14 @@ class UserController extends Controller
     }
 
     public function getUserChat($userId) {
-        if (Message::where('user', $userId)->exists()) {
-            $message = Message::where('user', $userId)->get();
-            return response()->json($message, 200);
+        if (Message::where('user', $userId)->where('owner', Auth::id())->orWhere(function ($query) use ($userId) {
+                $query->where('user', Auth::id())->where('owner', $userId);
+            })->exists()) {
+            $message = Message::where('user', $userId)->where('owner', Auth::id())->orWhere(
+                function ($query) use ($userId) {
+                    $query->where('user', Auth::id())->where('owner', $userId);
+                })->join('users', 'messages.owner', '=', 'users.id')->select('messages.*', 'users.username')->get();
+                return response()->json($message, 200);
         } else {
             return response()->json([
                 "message" => "No messages"

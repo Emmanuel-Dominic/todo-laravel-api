@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class MessageController extends Controller
 {
     public function getAllMessages() {
-        $messages = Message::get();
+        $messages = Message::orderBy('created_at', 'desc')->get();
         $count = $messages->count();
         if ($count==0){
             return response()->json(['message' => 'No Messages'], 404);
@@ -42,7 +42,7 @@ class MessageController extends Controller
                 ], 200);
             }
             return response()->json([
-                "message" => "sorry, you're not the author"
+                "message" => "unauthorized, this message doesn't belong to you"
             ], 401);
         } else {
             return response()->json([

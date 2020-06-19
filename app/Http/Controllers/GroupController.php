@@ -38,7 +38,12 @@ class GroupController extends Controller
     public function createGroupMessage(Request $request, int $groupId) {
         $message = new Message;
         $message['message'] = $request['message'];
+        $message['comment_on'] = null;
         $message['user'] = null;
+        if ($request['status']=='comment'){
+            $messaging = Message::where('id', $request['comment_on'])->get();
+            $message['comment_on'] = $request['comment_on'];
+        }
         $message['group'] = $groupId;
         $message['owner'] = Auth::id();
         $group = Group::findOrFail($groupId);
@@ -51,9 +56,11 @@ class GroupController extends Controller
 
 
     public function getGroupChat($groupId) {
+        $message = Message::where('group', $groupId)->join(
+            'users', 'messages.owner', '=', 'users.id')->select(
+                'messages.*', 'users.username')->get();
         if (Message::where('group', $groupId)->exists()) {
-            $message = Message::where('group', $groupId)->get()->toJson(JSON_PRETTY_PRINT);
-            return response($message, 200);
+            return response()->json($message, 200);
         } else {
             return response()->json([
                 "message" => "No messages"

@@ -15,10 +15,10 @@ class Message extends Model
     }
 
     protected $fillable = [
-        'message',
+        'message', 'status',
     ];
 
-    protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at','owner',];
+    protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at','owner', 'comment_on'];
 
     protected $dates = ['deleted_at',];
 
