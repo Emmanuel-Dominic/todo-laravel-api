@@ -8,6 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 
 
@@ -15,6 +17,36 @@ class UserController extends Controller
 {
     //
     private $secrete_key = 'hsw67wb%^&*$#xnjksnjcnsjknsjsjnsjncsjjssnjn';
+
+
+    public function uploadProfileImage($image)
+    {
+      $maxsize = 2097152;
+      $allowed = array('jpg', 'jpeg', 'gif', 'png');
+
+        // $image_name = $image['name'];
+       $image_name = $image->getClientOriginalName();
+        // $image_extn = strtolower(pathinfo($image_name, PATHINFO_EXTENSION));
+       $image_extn = $image->getClientOriginalExtension();
+//         $image_temp = $_FILES['profile']['tmp_name'];
+       $image_size = $image->getSize();
+        // $image_mime = $image->getClientMimeType();
+
+        if (in_array($image_extn, $allowed) === false) {
+            return response()->json(['error' => 'Invalid image file provided', 'allowed_types' => $allowed], 400);
+        }
+        if ($image_size >= $maxsize) {
+            return response()->json(['error' => 'File too large. File must be less than 2 megabytes.'], 400);
+        }
+        if ($image->isValid()) {
+            $rdm = uniqid(5);
+            $name = $rdm . '-' . date('mdYHis');
+            $filename = $name . '.' . $image_extn;
+            // Storage::disk('profile')->put($filename, File::get($image));
+            $image->move(public_path().'/images/profile/', $filename);
+            return $filename;
+        }
+    }
 
     /**
      * User Registration api controller for creating a new users.
@@ -26,6 +58,7 @@ class UserController extends Controller
     public function userRegister(Request $request)
     {
         $input = $request->all();
+        $image = $request->file('avatar');
         $validator = Validator::make($input, [
             'username' => 'required|unique:users|string|max:25',
             'name' => 'required|string|max:255',
@@ -33,13 +66,28 @@ class UserController extends Controller
             'password' => 'required|min:8',
             'confirm_password' => 'required|same:password'
         ]);
+        $avatar = '';
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
+        if ($request->hasfile('avatar')) {
+            foreach ($image as $data) {
+            $avatar = $this->uploadProfileImage($data);
+          }
+        }else{
+            $avatar = '55ef0f19b6a031-06222020175955.jpeg';
+        }
+        $user = User::make([
+              'username' => $input['username'],
+              'name' => $input['name'],
+              'email' => $input['email'],
+              'password' => bcrypt($input['password']),
+              'avatar' => $avatar,
+        ]);
+        $user->save();
         $success['access_token'] = $user->createToken($this->secrete_key)->accessToken;
         $success['message'] = 'User successfully Registered';
+        $success['avatar'] = $user->getImageUrl($avatar);
         $success['username'] = $user->username;
         $success['email'] = $user->email;
         $success['id'] = $user->id;
@@ -96,12 +144,13 @@ class UserController extends Controller
         return response()->json(['success' => $user], 200);
     }
 
-    public function createUserMessage(Request $request, int $userId) {
+    public function createUserMessage(Request $request, int $userId)
+    {
         $message = new Message;
         $message['message'] = $request['message'];
         $message['comment_on'] = null;
         $message['user'] = null;
-        if ($request['status']=='comment'){
+        if ($request['status'] == 'comment') {
             $messaging = Message::where('id', $request['comment_on'])->get();
             $message['comment_on'] = $request['comment_on'];
         }
@@ -116,15 +165,16 @@ class UserController extends Controller
         ], 201);
     }
 
-    public function getUserChat($userId) {
+    public function getUserChat($userId)
+    {
         if (Message::where('user', $userId)->where('owner', Auth::id())->orWhere(function ($query) use ($userId) {
-                $query->where('user', Auth::id())->where('owner', $userId);
-            })->exists()) {
+            $query->where('user', Auth::id())->where('owner', $userId);
+        })->exists()) {
             $message = Message::where('user', $userId)->where('owner', Auth::id())->orWhere(
                 function ($query) use ($userId) {
                     $query->where('user', Auth::id())->where('owner', $userId);
                 })->join('users', 'messages.owner', '=', 'users.id')->select('messages.*', 'users.username')->get();
-                return response()->json($message, 200);
+            return response()->json($message, 200);
         } else {
             return response()->json([
                 "message" => "No messages"
@@ -159,7 +209,7 @@ class UserController extends Controller
             return response()->json([
                 "message" => "user record updated successfully", "data" => $user
             ], 200);
-        }else{
+        } else {
             return response()->json(['error' => 'user not found'], 404);
         }
 
@@ -190,7 +240,8 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function restoreUser(int $userId){
+    public function restoreUser(int $userId)
+    {
         $user = User::onlyTrashed()->findOrFail($userId);
         $user->restore();
         $success['message'] = 'user record restored successfully';
@@ -221,7 +272,8 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function userRecords(){
+    public function userRecords()
+    {
         $users_history = User::withTrashed()->orderBy('created_at', 'desc')->get();
         $count = $users_history->count();
         if ($count == 0) {

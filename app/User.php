@@ -17,13 +17,18 @@ class User extends Authenticatable
         $this->hasMany(Message::class);
     }
 
+    public function getImageUrl($avatar)
+    {
+      return "app/public/images/profile/{$avatar}";
+    }
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'username', 'email', 'password',
+        'name', 'username', 'email', 'password', 'avatar',
     ];
 
     /**
