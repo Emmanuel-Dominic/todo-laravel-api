@@ -3,12 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\LocalizedDiffForHumansTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class Message extends Model
 {
-    use SoftDeletes, Notifiable;
+    use SoftDeletes, Notifiable, LocalizedDiffForHumansTrait;
 
     public function user(){
         $this->belongsTo(User::class);
@@ -20,6 +21,6 @@ class Message extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at','owner', 'comment_on'];
 
-    protected $dates = ['deleted_at',];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
 }

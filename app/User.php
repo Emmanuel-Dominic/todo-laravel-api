@@ -4,13 +4,14 @@ namespace App;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Http\Traits\LocalizedDiffForHumansTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, SoftDeletes, Notifiable;
+    use HasApiTokens, SoftDeletes, Notifiable, LocalizedDiffForHumansTrait;
 
     public function messages(){
         $this->hasMany(Message::class);
@@ -43,7 +44,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $dates = ['deleted_at',];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     protected $guarded = ['id', 'deleted_at', 'created_at', 'updated_at',];
 }
